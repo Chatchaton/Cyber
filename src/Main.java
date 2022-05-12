@@ -21,6 +21,9 @@ public class Main {
         PrivateKey privKey = pair.getPrivate();
         System.out.println("Private key format: " + privKey.getFormat());
 
+        Key pubKey = pair.getPublic();
+        System.out.println("Public key format: " + pubKey.getFormat());
+
         //Creating a Signature object
         Signature sign = Signature.getInstance("SHA256withDSA");
 
