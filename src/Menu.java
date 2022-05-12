@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Menu {
 
     private int choice = 0;
-    Scanner scanner = new Scanner(System.in);
+    final private Scanner scanner = new Scanner(System.in);
 
     public Menu() {}
     public void printMenu() {
