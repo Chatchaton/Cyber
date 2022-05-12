@@ -15,7 +15,7 @@ public class Main {
             case 2:
                 // SIGNING //
             default:
-                System.out.println("wrong commend");
+                System.out.println("wrong command");
         }
 
         //Creating KeyPair generator object
