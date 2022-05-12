@@ -3,20 +3,8 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String args[]) throws Exception {
-        //Accepting text from user
-        Scanner sc = new Scanner(System.in);
-        System.out.println("validate");
-        System.out.println("sign");
 
-        Integer opt = sc.nextInt();
-        switch(opt) {
-            case 1:
-                // VALIDATION //
-            case 2:
-                // SIGNING //
-            default:
-                System.out.println("wrong command");
-        }
+        Main main = new Main();
 
         //Creating KeyPair generator object
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
