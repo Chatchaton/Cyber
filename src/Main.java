@@ -4,8 +4,8 @@ import java.util.Scanner;
 public class Main {
     public static void main(String args[]) throws Exception {
 
-        Main main = new Main();
-        main.printMenu();
+        Menu menu = new Menu();
+        menu.printMenu();
 
         //Creating KeyPair generator object
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
