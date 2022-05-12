@@ -1,3 +1,4 @@
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Scanner;
 
@@ -34,6 +35,6 @@ public class Main {
         byte[] signature = sign.sign();
 
         //Printing the signature
-        System.out.println("Digital signature for given text: "+new String(signature, "UTF8"));
+        System.out.println("Digital signature for given text: "+new String(signature, StandardCharsets.UTF_8));
     }
 }
