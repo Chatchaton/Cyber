@@ -8,6 +8,8 @@ public class Menu {
     final private Scanner scanner = new Scanner(System.in);
 
     public Menu() {}
+
+    @Description("prints menu")
     public void printMenu() {
         System.out.println("---------------");
         System.out.println("1 - sign");
