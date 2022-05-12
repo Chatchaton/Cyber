@@ -1,8 +1,8 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.*;
+import java.awt.event.*;
 
-public class Menu {
+public class Menu implements ActionListener {
 
     public enum MenuOption { // hidden options only after visible ones //
         SIGN,
@@ -15,14 +15,38 @@ public class Menu {
             "validate file",
             "generate key pair"
     };
+    final private boolean GUI_MODE = false; // turn ON/OFF GUI //
+    final private int WINDOW_WIDTH = 300;
+    final private int WINDOW_HEIGHT = 300;
+    final private int WINDOW_LOCATION_X = 100;
+    final private int WINDOW_LOCATION_Y = 100;
 
 
-    private MenuOption choice = MenuOption.DEFAULT;
     final private Scanner scanner = new Scanner(System.in);
+    private MenuOption choice = MenuOption.DEFAULT;
+    private JMenu menu;
+    private JFrame jFrame;
+    private JMenuBar jMenuBar;
+    private JMenuItem jMenuItemArr[] = new JMenuItem[menuOptionNames.length];
 
+    public Menu() {
+        jFrame = new JFrame("WDC Project App");
+        jMenuBar = new JMenuBar();
+        menu = new JMenu("Menu");
 
-
-    public Menu() {}
+        for(int i=0; i< menuOptionNames.length; i++)
+        {
+            jMenuItemArr[i] = new JMenuItem(menuOptionNames[i]);
+            jMenuItemArr[i].addActionListener(this);
+            menu.add(jMenuItemArr[i]);
+        }
+        jMenuBar.add(menu);
+        jFrame.setJMenuBar(jMenuBar);
+        jFrame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        jFrame.setLocation(WINDOW_LOCATION_X, WINDOW_LOCATION_Y);
+        jFrame.setLayout(null);
+        jFrame.setVisible(GUI_MODE);
+    }
 
 
     public void printMenu()
@@ -66,4 +90,15 @@ public class Menu {
     public void setChoice(MenuOption choice) { this.choice = choice; }
     public MenuOption getChoice() { return this.choice; }
 
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        for(int i=0; i< menuOptionNames.length; i++)
+        {
+            if(e.getSource() == jMenuItemArr[i])
+            {
+                this.choice = MenuOption.values()[i];
+            }
+        }
+    }
 }
