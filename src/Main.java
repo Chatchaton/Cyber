@@ -13,6 +13,7 @@ public class Main {
 
         digitalSignature.modifyUserMessage("Hell2o World");
         digitalSignature.print_signature();
+
         digitalSignature.verifySignature();
     }
 }
