@@ -16,7 +16,6 @@ public class MenuOptionsList {
     };
     private MenuOption menuOptions[] = MenuOption.values();
     private int menuOptionNamesLength = menuOptionNames.length;
-    private MenuOption lastChoice = MenuOption.SIGN;
 
     public MenuOptionsList() {}
 
@@ -35,9 +34,6 @@ public class MenuOptionsList {
     }
     public String[] getMenuOptionNames() {
         return menuOptionNames;
-    }
-    public MenuOption getLastChoice() {
-        return lastChoice;
     }
 
 }

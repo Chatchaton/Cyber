@@ -1,9 +1,13 @@
 package menuComponents;
 
+import menuComponents.MenuOptionsList.MenuOption;
+
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Scanner;
+
 
 public class MenuList extends JMenu implements ActionListener {
 
@@ -12,13 +16,15 @@ public class MenuList extends JMenu implements ActionListener {
 
     private MenuOptionsList menuOptList = new MenuOptionsList();
     private int menuLength = menuOptList.getLength();
-    private MenuOptionsList.MenuOption choice = MenuOptionsList.MenuOption.DEFAULT;
+    private MenuOptionsList.MenuOption lastChoice = MenuOption.SIGN;
     private JMenuItem jMenuItemArr[] = new JMenuItem[menuLength];
-    final private Scanner scanner = new Scanner(System.in);
+    private Scanner scanner = new Scanner(System.in);
+    private ActionListener window;
 
 
-    public MenuList()
+    public MenuList(ActionListener window)
     {
+        this.window = window;
         this.setText(MENU_TEXT);
         for(int i=0; i< menuLength; i++)
         {
@@ -61,25 +67,26 @@ public class MenuList extends JMenu implements ActionListener {
                 System.out.println("- value not supported -");
             }
         }
-        this.choice = menuOptList.getMenuOption(input);
-        return this.choice;
+        this.lastChoice = menuOptList.getMenuOption(input);
+        return this.lastChoice;
     }
 
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        System.out.println("- action in MenuList -");
+        //System.out.println("- action in MenuList -");
         for(int i=0; i< menuLength; i++)
         {
             if(e.getSource() == jMenuItemArr[i])
             {
-                this.choice = menuOptList.getMenuOption(i);
+                this.lastChoice = menuOptList.getMenuOption(i);
             }
         }
+        window.actionPerformed(e);
     }
 
     public MenuOptionsList.MenuOption getLastChoice()
     {
-        return menuOptList.getLastChoice();
+        return lastChoice;
     }
 }
