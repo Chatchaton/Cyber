@@ -5,14 +5,12 @@ public class MenuOptionsList {
         SIGN,
         VALIDATE,
         GEN_PAIR,
-        CHECK_PAIR,
         DEFAULT
     }
     final private String menuOptionNames[] = new String[]{ // menu option names for enums //
             "sign file",
             "validate file",
-            "generate key pair",
-            "check keys pair"
+            "generate key pair"
     };
     private MenuOption menuOptions[] = MenuOption.values();
     private int menuOptionNamesLength = menuOptionNames.length;

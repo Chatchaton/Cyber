@@ -20,6 +20,7 @@ public class Window implements ActionListener {
     private KeysView keysView;
     private SignView signView;
     private ValidateView validateView;
+    private GenKeyPairView genKeyPairView;
 
     public Window()
     {
@@ -37,9 +38,11 @@ public class Window implements ActionListener {
         jFrame.add(keysView);
 
         signView = new SignView();
-        jFrame.add(signView);
-
         validateView = new ValidateView();
+        genKeyPairView = new GenKeyPairView();
+
+        this.displaySignView();
+
 
         jFrame.setVisible(GUI_MODE);
     }
@@ -61,6 +64,10 @@ public class Window implements ActionListener {
         else if(choice == MenuOption.VALIDATE)
         {
             this.displayValidateView();
+        }
+        else if(choice == MenuOption.GEN_PAIR)
+        {
+            this.displayGenPairView();
         }
         else
         {
@@ -84,5 +91,11 @@ public class Window implements ActionListener {
         jFrame.revalidate();
         jFrame.repaint();
     }
-    private void displayGenPairView() {}
+    private void displayGenPairView() {
+        jFrame.getContentPane().removeAll();
+        jFrame.add(keysView);
+        jFrame.add(genKeyPairView);
+        jFrame.revalidate();
+        jFrame.repaint();
+    }
 }
