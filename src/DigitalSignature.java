@@ -4,9 +4,9 @@ import java.security.*;
 public class DigitalSignature implements DigitalSignatureInterface {
     private KeyPairGenerator keyPairGen;
     private KeyPair keyPair;
-    private Signature signature;
     private PublicKey publicKey;
     private PrivateKey privateKey;
+    private Signature signature;
     private byte[] signatureBytes;
     private byte[] msgBytes;
 
