@@ -2,6 +2,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 
 public class DigitalSignature implements DigitalSignatureInterface {
+    private KeyPairGenerator keyPairGen;
     private KeyPair keyPair;
     private Signature signature;
     private PublicKey publicKey;
@@ -19,13 +20,13 @@ public class DigitalSignature implements DigitalSignatureInterface {
     @Override
     public void generateKeyPair() throws NoSuchAlgorithmException {
         //Creating KeyPair generator object
-        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
+        setKeyPairGen(KeyPairGenerator.getInstance("DSA"));
 
         //Initializing the key pair generator
-        keyPairGen.initialize(2048);
+        getKeyPairGenerator().initialize(2048);
 
         //Generate the pair of keys
-        setKeyPair( keyPairGen.generateKeyPair());
+        setKeyPair( getKeyPairGenerator().generateKeyPair());
         setPrivateKey(getKeyPair().getPrivate());
         setPublicKey(getKeyPair().getPublic());
     }
@@ -38,19 +39,22 @@ public class DigitalSignature implements DigitalSignatureInterface {
     }
 
     @Override
+    //Update the data
     public void updateSignature() throws SignatureException {
         getSignature().update(getMsgBytes());
     }
 
     @Override
     public void calculateSignature() throws SignatureException {
+        //Calculating the signature
         setSignBytes(getSignature().sign());
+
+        updateSignature();
     }
 
     @Override
-    public void modifyUserMessage(String message) throws SignatureException {
+    public void modifyUserMessage(String message) {
         setMsgBytes(message);
-        updateSignature();
     }
 
     @Override
@@ -102,6 +106,11 @@ public class DigitalSignature implements DigitalSignatureInterface {
     }
 
     @Override
+    public KeyPairGenerator getKeyPairGenerator() {
+        return this.keyPairGen;
+    }
+
+    @Override
     public void setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
@@ -125,6 +134,11 @@ public class DigitalSignature implements DigitalSignatureInterface {
     @Override
     public void setMsgBytes(String msg) {
         this.msgBytes = msg.getBytes();
+    }
+
+    @Override
+    public void setKeyPairGen(KeyPairGenerator keyPairGen) {
+        this.keyPairGen = keyPairGen;
     }
 
     @Override

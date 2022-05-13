@@ -24,6 +24,7 @@ public interface DigitalSignatureInterface {
     void setSignBytes(byte[] signatureBytes);
     void setKeyPair(KeyPair keyPair);
     void setMsgBytes(String msg);
+    void setKeyPairGen(KeyPairGenerator keyPairGen);
 
     PublicKey getPublicKey();
     PrivateKey getPrivateKey();
@@ -31,4 +32,5 @@ public interface DigitalSignatureInterface {
     byte[] getSignBytes();
     byte[] getMsgBytes();
     KeyPair getKeyPair();
+    KeyPairGenerator getKeyPairGenerator();
 }
