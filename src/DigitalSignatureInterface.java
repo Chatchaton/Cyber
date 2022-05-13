@@ -1,20 +1,25 @@
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.*;
 
 public interface DigitalSignatureInterface {
+    void verifySignature(Path path) throws InvalidKeyException, SignatureException, IOException;
+
     void type_format(Key key);
     void print_signature();
 
-    void generateKeyPair() throws NoSuchAlgorithmException;
+    void createSignature(PrivateKey key, String signature)throws NoSuchAlgorithmException, InvalidKeyException;
 
-    void createSignature(PrivateKey key) throws NoSuchAlgorithmException, InvalidKeyException;
+    void generateKeyPair() throws NoSuchAlgorithmException;
 
     void updateSignature() throws SignatureException;
 
-    void calculateSignature() throws SignatureException;
+    void calculateSignature(boolean save) throws SignatureException, IOException;
 
-    void modifyUserMessage(String message) throws InvalidKeyException, SignatureException;
 
-    void verifySignature() throws InvalidKeyException, SignatureException;
+
+    void calculateMessageBytes(Path path) throws IOException;
 
     void setSignature(Signature signature);
 
@@ -23,7 +28,9 @@ public interface DigitalSignatureInterface {
     void setPrivateKey(PrivateKey privateKey);
     void setSignBytes(byte[] signatureBytes);
     void setKeyPair(KeyPair keyPair);
-    void setMsgBytes(String msg);
+
+    void setMsgBytes(byte[] msgBytes);
+
     void setKeyPairGen(KeyPairGenerator keyPairGen);
 
     PublicKey getPublicKey();

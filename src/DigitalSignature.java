@@ -1,4 +1,8 @@
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.*;
 
 public class DigitalSignature implements DigitalSignatureInterface {
@@ -11,16 +15,24 @@ public class DigitalSignature implements DigitalSignatureInterface {
     private byte[] msgBytes;
 
 
-    public DigitalSignature() throws NoSuchAlgorithmException, InvalidKeyException {
+    public DigitalSignature(String signature) throws NoSuchAlgorithmException, InvalidKeyException {
         generateKeyPair();
         PrivateKey privateKey = getPrivateKey();
-        createSignature(privateKey);
+        createSignature(privateKey,signature);
+    }
+
+    @Override
+    public void createSignature(PrivateKey key, String signature)throws NoSuchAlgorithmException, InvalidKeyException {
+        //Creating a Signature object
+        setSignature(Signature.getInstance(signature));
+        getSignature().initSign(key);
     }
 
     @Override
     public void generateKeyPair() throws NoSuchAlgorithmException {
         //Creating KeyPair generator object
-        setKeyPairGen(KeyPairGenerator.getInstance("DSA"));
+        //TODO RSA and DSA depending on user input i.e SHA256withXXX
+        setKeyPairGen(KeyPairGenerator.getInstance("RSA"));
 
         //Initializing the key pair generator
         getKeyPairGenerator().initialize(2048);
@@ -31,12 +43,6 @@ public class DigitalSignature implements DigitalSignatureInterface {
         setPublicKey(getKeyPair().getPublic());
     }
 
-    @Override
-    public void createSignature(PrivateKey key) throws NoSuchAlgorithmException, InvalidKeyException {
-        //Creating a Signature object
-        setSignature(Signature.getInstance("SHA256withDSA"));
-        getSignature().initSign(key);
-    }
 
     @Override
     //Update the data
@@ -45,23 +51,28 @@ public class DigitalSignature implements DigitalSignatureInterface {
     }
 
     @Override
-    public void calculateSignature() throws SignatureException {
+    public void calculateSignature(boolean save) throws SignatureException, IOException {
         //Calculating the signature
+        updateSignature();
         setSignBytes(getSignature().sign());
 
-        updateSignature();
+        //save signature
+        if (save)
+            Files.write(Paths.get("src\\digital_signature"),getSignBytes());
+    }
+
+
+    @Override
+    public void calculateMessageBytes(Path path) throws IOException {
+        setMsgBytes(Files.readAllBytes(path));
     }
 
     @Override
-    public void modifyUserMessage(String message) {
-        setMsgBytes(message);
-    }
-
-    @Override
-    public void verifySignature() throws InvalidKeyException, SignatureException {
+    public void verifySignature(Path path) throws InvalidKeyException, SignatureException, IOException {
         getSignature().initVerify(getPublicKey());
         updateSignature();
-        boolean bool = getSignature().verify(getSignBytes());
+        byte[] sig = Files.readAllBytes(path);
+        boolean bool = getSignature().verify(sig);
         if(bool) {
             System.out.println("Signature verified");
         } else {
@@ -132,9 +143,11 @@ public class DigitalSignature implements DigitalSignatureInterface {
     }
 
     @Override
-    public void setMsgBytes(String msg) {
-        this.msgBytes = msg.getBytes();
+    public void setMsgBytes(byte[] msgBytes) {
+        this.msgBytes = msgBytes;
     }
+
+
 
     @Override
     public void setKeyPairGen(KeyPairGenerator keyPairGen) {

@@ -1,39 +1,36 @@
 import menuComponents.*;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.*;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        Window window = new Window();
-        MenuOptionsList.MenuOption opt = window.operateMenu();
-        System.out.println(opt);
+//        Window window = new Window();
+//        MenuOptionsList.MenuOption opt = window.operateMenu();
+//        System.out.println(opt);
 
-        DigitalSignature digitalSignature = new DigitalSignature();
-        digitalSignature.modifyUserMessage("Hello World");
-        digitalSignature.calculateSignature();
+        DigitalSignature digitalSignature = new DigitalSignature("SHA256withRSA");
+        //digitalSignature.modifyUserMessage("Hello World");
+        File dummyfile = new File("src\\msg.txt");
+        digitalSignature.calculateMessageBytes(Path.of(dummyfile.getAbsolutePath()));
+        digitalSignature.calculateSignature(true);
         digitalSignature.print_signature();
 
-        digitalSignature.modifyUserMessage("Not now");
-        digitalSignature.verifySignature();
 
-        //Creating a Signature object
-        Signature sign = Signature.getInstance("SHA256withDSA");
+        //chosen file to be verified
+        File dummyfile2 = new File("src\\msg.txt");
+        digitalSignature.calculateMessageBytes(Path.of(dummyfile2.getAbsolutePath()));
+       // digitalSignature.calculateSignature(false);
 
-        //Initialize the signature
-        PrivateKey privKey = null;
-        sign.initSign(privKey);
-        byte[] bytes = "msg".getBytes();
 
-        //Adding data to the signature
-        sign.update(bytes);
+        //chosen signature is gonna be user input from file
+        File dummySign = new File("src\\digital_signature");
+        digitalSignature.verifySignature(Path.of(dummySign.getAbsolutePath()));
 
-        //Calculating the signature
-        byte[] signature = sign.sign();
-
-        //Printing the signature
-        System.out.println("Digital signature for given text: "+new String(signature, StandardCharsets.UTF_8));
     }
 }
