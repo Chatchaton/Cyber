@@ -11,6 +11,7 @@ public class Window implements ActionListener {
     final private int WINDOW_HEIGHT = 300;
     final private int WINDOW_LOCATION_X = 100;
     final private int WINDOW_LOCATION_Y = 100;
+    final private String WINDOW_TITLE = "WDC Project App";
 
 
     private MenuList menu;
@@ -19,7 +20,7 @@ public class Window implements ActionListener {
     private KeysView keysView;
 
     public Window() {
-        jFrame = new JFrame("WDC Project App");
+        jFrame = new JFrame(WINDOW_TITLE);
         jMenuBar = new JMenuBar();
         menu = new MenuList();
         jMenuBar.add(menu);
@@ -27,14 +28,10 @@ public class Window implements ActionListener {
         jFrame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         jFrame.setLocation(WINDOW_LOCATION_X, WINDOW_LOCATION_Y);
         jFrame.setLayout(null);
-
-
-
-
         jFrame.setVisible(GUI_MODE);
     }
 
-    public MenuOptionsList.MenuOption operateMenu() {
+    public MenuOptionsList.MenuOption operateMenu() { // only for text user interface //
         return menu.operateMenu();
     }
 

@@ -7,6 +7,8 @@ import java.util.Scanner;
 
 public class MenuList extends JMenu implements ActionListener {
 
+    final private String MENU_TEXT = "Menu";
+
     private MenuOptionsList menuOptList = new MenuOptionsList();
     private int menuLength = menuOptList.getLength();
     private MenuOptionsList.MenuOption choice = MenuOptionsList.MenuOption.DEFAULT;
@@ -15,6 +17,7 @@ public class MenuList extends JMenu implements ActionListener {
 
 
     public MenuList() {
+        this.setText(MENU_TEXT);
         for(int i=0; i< menuLength; i++)
         {
             jMenuItemArr[i] = new JMenuItem(menuOptList.getMenuOptionName(i));
@@ -38,7 +41,7 @@ public class MenuList extends JMenu implements ActionListener {
      prints menu -> gets user input -> returns option enum
      @return selected option as: < MenuOption > enum
      */
-    public MenuOptionsList.MenuOption operateMenu() // prints menu and return choice //
+    public MenuOptionsList.MenuOption operateMenu() // prints menu and return choice // // only for text user interface //
     {
         boolean validChoice = false;
         int input = 0;
