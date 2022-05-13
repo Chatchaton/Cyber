@@ -9,6 +9,7 @@ public class MenuList extends JMenu implements ActionListener {
 
     final private String MENU_TEXT = "Menu";
 
+
     private MenuOptionsList menuOptList = new MenuOptionsList();
     private int menuLength = menuOptList.getLength();
     private MenuOptionsList.MenuOption choice = MenuOptionsList.MenuOption.DEFAULT;
@@ -16,7 +17,8 @@ public class MenuList extends JMenu implements ActionListener {
     final private Scanner scanner = new Scanner(System.in);
 
 
-    public MenuList() {
+    public MenuList()
+    {
         this.setText(MENU_TEXT);
         for(int i=0; i< menuLength; i++)
         {
@@ -64,7 +66,8 @@ public class MenuList extends JMenu implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e)
+    {
         for(int i=0; i< menuLength; i++)
         {
             if(e.getSource() == jMenuItemArr[i])

@@ -19,12 +19,15 @@ public class Window implements ActionListener {
     private JMenuBar jMenuBar;
     private KeysView keysView;
 
-    public Window() {
+    public Window()
+    {
         jFrame = new JFrame(WINDOW_TITLE);
+
         jMenuBar = new JMenuBar();
         menu = new MenuList();
         jMenuBar.add(menu);
         jFrame.setJMenuBar(jMenuBar);
+
         jFrame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         jFrame.setLocation(WINDOW_LOCATION_X, WINDOW_LOCATION_Y);
         jFrame.setLayout(null);
@@ -37,8 +40,7 @@ public class Window implements ActionListener {
 
 
     @Override
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         menu.actionPerformed(e);
     }
 
