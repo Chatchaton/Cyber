@@ -7,7 +7,7 @@ import java.awt.event.*;
 
 public class Window implements ActionListener {
 
-    final private boolean GUI_MODE = true; // turn ON/OFF GUI //
+    final private boolean GUI_MODE = false; // turn ON/OFF GUI //
     final private int WINDOW_WIDTH = 500;
     final private int WINDOW_HEIGHT = 400;
     final private int WINDOW_LOCATION_X = 100;
