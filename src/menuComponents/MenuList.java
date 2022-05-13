@@ -68,6 +68,7 @@ public class MenuList extends JMenu implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e)
     {
+        System.out.println("- action in MenuList -");
         for(int i=0; i< menuLength; i++)
         {
             if(e.getSource() == jMenuItemArr[i])
@@ -75,5 +76,10 @@ public class MenuList extends JMenu implements ActionListener {
                 this.choice = menuOptList.getMenuOption(i);
             }
         }
+    }
+
+    public MenuOptionsList.MenuOption getLastChoice()
+    {
+        return menuOptList.getLastChoice();
     }
 }

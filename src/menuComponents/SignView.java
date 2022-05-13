@@ -6,7 +6,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
-public class KeysView extends JPanel {
+public class SignView extends JPanel {
 
     final private int MARGIN = 20;
     final private int VERTICAL_PADDING = 40;
@@ -22,16 +22,17 @@ public class KeysView extends JPanel {
     private JTextField privKeyField;
     private String pubKeyString;
     private String privKeyString;
+    private JButton button;
     private Border border;
 
-    public KeysView()
+    public SignView()
     {
         this.setSize(PANEL_WIDTH, PANEL_HEIGHT);
-        this.setLayout(new GridLayout(2, 2));
+        this.setLayout(new GridLayout(3, 2));
         border = new EmptyBorder(VERTICAL_PADDING, HORIZONTAL_PADDING, VERTICAL_PADDING, HORIZONTAL_PADDING);
         this.setBorder(border);
 
-        pubKeyLabel = new JLabel("Public Key:");
+        pubKeyLabel = new JLabel("File path:");
         pubKeyLabel.setFont(new Font("Arial", Font.PLAIN, 15));
         //pubKeyLabel.setSize(100, 20);
         //pubKeyLabel.setLocation(0, 0);
@@ -43,7 +44,7 @@ public class KeysView extends JPanel {
         //pubKeyField.setLocation(100, 0);
         this.add(pubKeyField);
 
-        privKeyLabel = new JLabel("Private Key:");
+        privKeyLabel = new JLabel("Signature:");
         privKeyLabel.setFont(new Font("Arial", Font.PLAIN, 15));
         //privKeyLabel.setSize(100, 20);
         //privKeyLabel.setLocation(0, 50);
@@ -54,6 +55,12 @@ public class KeysView extends JPanel {
         //privKeyField.setSize(200, 20);
         //privKeyField.setLocation(100, 50);
         this.add(privKeyField);
+
+        this.add(new JLabel(""));
+
+        button = new JButton("Sign");
+        button.setFont(new Font("Arial", Font.PLAIN, 17));
+        this.add(button);
 
         pubKeyString = pubKeyField.getText();
         privKeyString = privKeyField.getText();
