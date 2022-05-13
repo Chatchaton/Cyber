@@ -51,7 +51,6 @@ public class DigitalSignature implements DigitalSignatureInterface {
     public void modifyUserMessage(String message) throws SignatureException {
         setMsgBytes(message);
         updateSignature();
-
     }
 
     @Override
@@ -137,7 +136,5 @@ public class DigitalSignature implements DigitalSignatureInterface {
     public PrivateKey getPrivateKey() {
         return this.privateKey;
     }
-
-
 
 }

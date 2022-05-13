@@ -31,6 +31,4 @@ public interface DigitalSignatureInterface {
     byte[] getSignBytes();
     byte[] getMsgBytes();
     KeyPair getKeyPair();
-
-
 }
