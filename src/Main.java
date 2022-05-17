@@ -3,16 +3,11 @@ import menuComponents.*;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.*;
-import java.util.Scanner;
+import signature.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
 
-//        Window window = new Window();
-//        MenuOptionsList.MenuOption opt = window.operateMenu();
-//        System.out.println(opt);
 
         DigitalSignature digitalSignature = new DigitalSignature("SHA256withRSA");
         //digitalSignature.modifyUserMessage("Hello World");
