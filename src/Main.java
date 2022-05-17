@@ -1,8 +1,9 @@
-import menuComponents.*;
+import menuComponents.MenuOptionsList;
+import signature.DigitalSignature;
 
 import java.nio.charset.StandardCharsets;
-import java.security.*;
-import java.util.Scanner;
+import java.security.PrivateKey;
+import java.security.Signature;
 
 public class Main {
     public static void main(String[] args) throws Exception {
