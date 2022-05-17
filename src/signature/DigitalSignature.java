@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.*;
 
 public class DigitalSignature implements DigitalSignatureInterface {
@@ -19,7 +18,7 @@ public class DigitalSignature implements DigitalSignatureInterface {
 
     public DigitalSignature(String signature) throws NoSuchAlgorithmException, InvalidKeyException {
         generateKeyPair();
-        PrivateKey privateKey = getPrivateKey();
+        var privateKey = getPrivateKey();
         createSignature(privateKey,signature);
     }
 
@@ -149,8 +148,6 @@ public class DigitalSignature implements DigitalSignatureInterface {
     public void setMsgBytes(byte[] msgBytes) {
         this.msgBytes = msgBytes;
     }
-
-
 
     @Override
     public void setKeyPairGen(KeyPairGenerator keyPairGen) {
