@@ -26,7 +26,6 @@ public class SignatureMeta implements Serializable {
     }
 
     public SignatureMeta(byte[] signBytes, String author){
-
         this.setSignBytes(signBytes);
         this.setAuthor(author);
     }
