@@ -10,21 +10,23 @@ import java.util.List;
 
 public class FileChooser implements ActionListener {
 
-    public interface FileChangedListener {
-        void call(FileChangedEvent arg);
-    }
-    public record FileChangedEvent(File file) {}
-
-
     private final List<FileChangedListener> fileChangedListeners = new ArrayList<>();
     private final JLabel filenameLabel;
     private final JButton chooseFileButton;
     private File file;
     private Component parent;
 
+    public FileChooser() {
+        this.filenameLabel = new JLabel();
+        this.chooseFileButton = new JButton();
+        this.chooseFileButton.setText("Choose file");
+        this.chooseFileButton.addActionListener(this);
+    }
+
     public void addListener(FileChangedListener listener) {
         fileChangedListeners.add(listener);
     }
+
     public boolean removeListener(FileChangedListener listener) {
         return fileChangedListeners.remove(listener);
     }
@@ -32,13 +34,6 @@ public class FileChooser implements ActionListener {
     private void notifyFileChangedListeners() {
         var arg = new FileChangedEvent(file);
         fileChangedListeners.forEach(e -> e.call(arg));
-    }
-
-    public FileChooser() {
-        this.filenameLabel = new JLabel();
-        this.chooseFileButton = new JButton();
-        this.chooseFileButton.setText("Choose file");
-        this.chooseFileButton.addActionListener(this);
     }
 
     @Override
@@ -71,5 +66,12 @@ public class FileChooser implements ActionListener {
 
     public void setParent(Component parent) {
         this.parent = parent;
+    }
+
+    public interface FileChangedListener {
+        void call(FileChangedEvent arg);
+    }
+
+    public record FileChangedEvent(File file) {
     }
 }
