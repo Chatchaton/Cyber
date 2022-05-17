@@ -1,15 +1,14 @@
 package ui;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Arrays;
 
-public class SigningPanel extends JPanel implements ActionListener, FileChooser.FileChangedListener {
-    private static final String[] KEYGEN_ALGORITHMS = { "DiffieHellman", "DSA", "RSA", "EC" };
-    private static final String[] SIGNING_ALGORITHMS = { " SHA256withRSA", "SHA384withRSA", "SHA512withRSA" };
-    private static final String SIGN_ACTION_COMMAND = "SIGN_ACTION_COMMAND";
+public class SigningPanel extends JPanel {
+    private static final String[] KEYGEN_ALGORITHMS = {"DiffieHellman", "DSA", "RSA", "EC"};
+    private static final String[] SIGNING_ALGORITHMS = {" SHA256withRSA", "SHA384withRSA", "SHA512withRSA"};
     private final JButton signButton;
+    private File file;
 
     public SigningPanel() {
 
@@ -21,16 +20,16 @@ public class SigningPanel extends JPanel implements ActionListener, FileChooser.
 
         var fileLabel = new JLabel("File:");
         var chooser = new FileChooser();
-        chooser.addListener(this);
+        chooser.addListener(this::onFileChanged);
 
         var fileInputHorizontalGroup = layout.createSequentialGroup()
-                .addComponent(fileLabel)
-                .addComponent(chooser.getFilenameLabel())
-                .addComponent(chooser.getChooseFileButton());
+            .addComponent(fileLabel)
+            .addComponent(chooser.getFilenameLabel())
+            .addComponent(chooser.getChooseFileButton());
         var fileInputVerticalGroup = layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                .addComponent(fileLabel)
-                .addComponent(chooser.getFilenameLabel())
-                .addComponent(chooser.getChooseFileButton());
+            .addComponent(fileLabel)
+            .addComponent(chooser.getFilenameLabel())
+            .addComponent(chooser.getChooseFileButton());
 
 
         var algorithmLabel = new JLabel("Algorithm:");
@@ -44,43 +43,43 @@ public class SigningPanel extends JPanel implements ActionListener, FileChooser.
         radioButtons.forEach(buttonGroup::add);
 
         var algorithmHorizontalGroup = layout.createParallelGroup()
-                .addComponent(algorithmLabel);
+            .addComponent(algorithmLabel);
         radioButtons.forEach(algorithmHorizontalGroup::addComponent);
         var algorithmVerticalGroup = layout.createSequentialGroup()
-                .addComponent(algorithmLabel);
+            .addComponent(algorithmLabel);
         radioButtons.forEach(algorithmVerticalGroup::addComponent);
 
 
         this.signButton = new JButton("Sign");
-        signButton.setActionCommand(SIGN_ACTION_COMMAND);
-        signButton.addActionListener(this);
-        signButton.setEnabled(false);
+        signButton.addActionListener(e -> this.onSign());
+        this.updateSignButton();
 
         layout.setHorizontalGroup(
-                layout.createParallelGroup()
-                        .addGroup(fileInputHorizontalGroup)
-                        .addGroup(algorithmHorizontalGroup)
-                        .addComponent(signButton)
+            layout.createParallelGroup()
+                .addGroup(fileInputHorizontalGroup)
+                .addGroup(algorithmHorizontalGroup)
+                .addComponent(signButton)
         );
         layout.setVerticalGroup(
-                layout.createSequentialGroup()
-                        .addGroup(fileInputVerticalGroup)
-                        .addGroup(algorithmVerticalGroup)
-                        .addComponent(signButton)
+            layout.createSequentialGroup()
+                .addGroup(fileInputVerticalGroup)
+                .addGroup(algorithmVerticalGroup)
+                .addComponent(signButton)
         );
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        switch (e.getActionCommand()) {
-            case SIGN_ACTION_COMMAND -> {
 
-            }
-        }
+    private void onSign() {
+
     }
 
-    @Override
-    public void call(FileChooser.FileChangedEvent arg) {
-        signButton.setEnabled(arg.file() != null);
+
+    private void onFileChanged(FileChooser.FileChangedEvent event) {
+        this.file = event.file();
+        updateSignButton();
+    }
+
+    private void updateSignButton() {
+        signButton.setEnabled(this.file != null);
     }
 }
