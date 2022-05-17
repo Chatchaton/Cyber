@@ -17,10 +17,9 @@ public interface DigitalSignatureInterface {
 
     void updateSignature() throws SignatureException;
 
-    void calculateSignature(boolean save) throws SignatureException, IOException;
+    void calculateSignature() throws SignatureException, IOException;
 
-
-
+    void saveSignature(Path path) throws IOException;
     void calculateMessageBytes(Path path) throws IOException;
 
     void setSignature(Signature signature);

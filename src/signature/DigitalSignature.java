@@ -53,16 +53,17 @@ public class DigitalSignature implements DigitalSignatureInterface {
     }
 
     @Override
-    public void calculateSignature(boolean save) throws SignatureException, IOException {
-        //Calculating the signature
+    public void calculateSignature() throws SignatureException {
+        //Calculating the Signature
         updateSignature();
         setSignBytes(getSignature().sign());
-
-        //save signature
-        if (save)
-            Files.write(Paths.get("src\\digital_signature"),getSignBytes());
     }
 
+    @Override
+    public void saveSignature(Path path) throws IOException {
+        //save SignatureMeta
+        Files.write(path,getSignBytes());
+    }
 
     @Override
     public void calculateMessageBytes(Path path) throws IOException {
@@ -90,7 +91,7 @@ public class DigitalSignature implements DigitalSignatureInterface {
 
     @Override
     public void print_signature() {
-        System.out.println("Digital signature for given text: "+new String(getSignBytes(), StandardCharsets.UTF_8));
+        System.out.println("Digital SignatureMeta for given text: "+new String(getSignBytes(), StandardCharsets.UTF_8));
     }
 
     @Override
