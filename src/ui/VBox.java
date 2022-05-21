@@ -27,4 +27,10 @@ public class VBox extends JPanel {
         layout.setVerticalGroup(verticalGroup);
 
     }
+
+    public static VBox of(Component... children) {
+        var box = new VBox();
+        box.setChildren(children);
+        return box;
+    }
 }

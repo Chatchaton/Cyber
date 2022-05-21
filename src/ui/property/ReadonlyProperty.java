@@ -4,9 +4,10 @@ package ui.property;
 public interface ReadonlyProperty<T> {
 
 
-    boolean addListener(ValueChangedListener<T> listener);
+    Subscription addListener(ValueChangedListener<T> listener);
 
-    boolean removeListener(ValueChangedListener<T> listener);
+    void removeListener(ValueChangedListener<T> listener);
 
     T value();
 }
+

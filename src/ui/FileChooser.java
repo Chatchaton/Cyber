@@ -1,7 +1,8 @@
 package ui;
 
 import ui.property.Property;
-import ui.property.ReadonlyProperty;
+import ui.property.SimpleProperty;
+import ui.property.ValueChangedEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,15 +11,9 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 public class FileChooser implements ActionListener {
-
     private final JLabel filenameLabel;
     private final JButton chooseFileButton;
-    private final Property<File> _fileProperty = new Property<>();
-
-    public ReadonlyProperty<File> fileProperty() {
-        return _fileProperty;
-    }
-
+    private final Property<File> _fileProperty = new SimpleProperty<>();
     private Component parent;
 
     public FileChooser() {
@@ -26,6 +21,17 @@ public class FileChooser implements ActionListener {
         this.chooseFileButton = new JButton();
         this.chooseFileButton.setText("Choose file");
         this.chooseFileButton.addActionListener(this);
+        this._fileProperty.addListener(this::onFileChanged);
+    }
+
+    public Property<File> fileProperty() {
+        return _fileProperty;
+    }
+
+    private void onFileChanged(ValueChangedEvent<File> event) {
+        var file = event.newValue();
+        var filename = file != null ? file.getName() : "";
+        this.filenameLabel.setText(filename);
     }
 
     @Override
@@ -35,7 +41,6 @@ public class FileChooser implements ActionListener {
         dialog.setMultiSelectionEnabled(false);
         if (dialog.showOpenDialog(this.parent) == JFileChooser.APPROVE_OPTION) {
             var file = dialog.getSelectedFile();
-            this.filenameLabel.setText(file.getName());
             _fileProperty.setValue(file);
         }
     }

@@ -1,6 +1,8 @@
 package ui;
 
+import services.ServiceCollection;
 import ui.property.ValueChangedEvent;
+import ui.utils.FileInputHelper;
 
 import javax.swing.*;
 import java.io.File;
@@ -10,7 +12,7 @@ public class AuthenticatingPanel extends VBox {
     private File file;
     private File signature;
 
-    public AuthenticatingPanel() {
+    public AuthenticatingPanel(ServiceCollection serviceCollection) {
 
         this.authenticateButton = new JButton("Authenticate");
         this.authenticateButton.addActionListener(e -> this.authenticate());
@@ -29,42 +31,18 @@ public class AuthenticatingPanel extends VBox {
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
-        var fileLabel = new JLabel("File:");
         var fileChooser = new FileChooser();
         fileChooser.fileProperty().addListener(this::onFileChanged);
 
-        var signatureLabel = new JLabel("Signature:");
         var signatureChooser = new FileChooser();
         signatureChooser.fileProperty().addListener(this::onSignatureChanged);
 
 
-        this.authenticateButton = new JButton("Authenticate");
-        this.authenticateButton.addActionListener(e -> this.authenticate());
+        new FileInputHelper()
+            .add("File:", fileChooser)
+            .add("Signature:", signatureChooser)
+            .buildLayout(panel);
 
-        layout.setHorizontalGroup(
-            layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                    .addComponent(fileLabel)
-                    .addComponent(signatureLabel))
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(fileChooser.getFilenameLabel())
-                        .addComponent(fileChooser.getChooseFileButton()))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(signatureChooser.getFilenameLabel())
-                        .addComponent(signatureChooser.getChooseFileButton())))
-        );
-        layout.setVerticalGroup(
-            layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                    .addComponent(fileLabel)
-                    .addComponent(fileChooser.getFilenameLabel())
-                    .addComponent(fileChooser.getChooseFileButton()))
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                    .addComponent(signatureLabel)
-                    .addComponent(signatureChooser.getFilenameLabel())
-                    .addComponent(signatureChooser.getChooseFileButton()))
-        );
         return panel;
     }
 

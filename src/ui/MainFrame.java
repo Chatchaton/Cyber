@@ -1,20 +1,27 @@
 package ui;
 
+import services.ServiceCollection;
+import signature.DigitalSignature;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
 
-    public MainFrame() {
+    private final ServiceCollection serviceCollection = new ServiceCollection();
+
+    public MainFrame() throws Exception {
         super("Cyber");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        serviceCollection.setSingleton(DigitalSignature.class, new DigitalSignature("SHA256withRSA"));
 
         buildComponents();
 
         setVisible(true);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         var frame = new MainFrame();
     }
 
@@ -24,8 +31,9 @@ public class MainFrame extends JFrame {
 
         var tabbedPane = new JTabbedPane();
 
-        tabbedPane.addTab("Sign", new SigningPanel());
-        tabbedPane.addTab("Authenticate", new AuthenticatingPanel());
+        tabbedPane.addTab("Sign", new SigningPanel(serviceCollection));
+        tabbedPane.addTab("Authenticate", new AuthenticatingPanel(serviceCollection));
+        tabbedPane.addTab("Keys", new KeysPanel(serviceCollection));
         getContentPane().add(tabbedPane);
         pack();
     }
