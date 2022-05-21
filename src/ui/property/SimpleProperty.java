@@ -2,12 +2,37 @@ package ui.property;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class SimpleProperty<T> implements Property<T> {
+
+    private Binding<T> binding;
+
+    @Override
+    public void setValue(T v) throws IllegalAccessException {
+        if (this.binding instanceof SimpleBinding<T> binding) {
+            binding.property().setValue(v);
+        } else if (this.binding instanceof SimpleProperty.MappedBinding<T> binding) {
+            throw new IllegalAccessException();
+        } else {
+            var oldValue = _value;
+            _value = v;
+            var event = new ValueChangedEvent<>(oldValue, _value, this);
+            notifyListeners(event);
+        }
+    }
+
+    public void bind(Property<T> property) {
+        this.unbind();
+        this.binding = new SimpleBinding<>(property, property.addListener(this::onBoundPropertyChanged));
+    }
+
     private final List<ValueChangedListener<T>> valueChangedListeners = new ArrayList<>();
     private T _value;
-    private Subscription boundPropertySubscription;
-    private Property<T> boundProperty;
+
+    public <A> void bind(Property<A> property, Function<A, T> mapper) {
+        bind(property, mapper, false);
+    }
 
     public SimpleProperty() {
     }
@@ -37,16 +62,15 @@ public class SimpleProperty<T> implements Property<T> {
         return _value;
     }
 
-    @Override
-    public void setValue(T v) {
-        if (this.boundProperty != null) {
-            this.boundProperty.setValue(v);
-        } else {
-            var oldValue = _value;
-            _value = v;
-            var event = new ValueChangedEvent<>(oldValue, _value, this);
-            notifyListeners(event);
-        }
+    public <A> void bind(Property<A> property, Function<A, T> mapper, boolean mapNull) {
+        this.unbind();
+        this.binding = new MappedBinding<>(property, property.addListener(e -> {
+            var oldValue = this._value;
+            var mappedValue = e.newValue() != null || mapNull ? mapper.apply(e.newValue()) : null;
+            var newEvent = new ValueChangedEvent<>(oldValue, mappedValue, this);
+            this.setValueSilent(mappedValue);
+            this.onBoundPropertyChanged(newEvent);
+        }));
     }
 
     private void notifyListeners(ValueChangedEvent<T> event) {
@@ -58,23 +82,27 @@ public class SimpleProperty<T> implements Property<T> {
         _value = v;
     }
 
-    public void bind(Property<T> property) {
-        this.unbind();
-        this.boundProperty = property;
-        this.boundPropertySubscription = property.addListener(this::onBoundPropertyChanged);
-    }
-
     public void unbind() {
-        if (this.boundProperty != null) {
-            this.boundPropertySubscription.unsubscribe();
-            this.boundPropertySubscription = null;
-            this.boundProperty = null;
+        if (this.binding != null) {
+            this.binding.subscription().unsubscribe();
+            this.binding = null;
         }
     }
 
     private void onBoundPropertyChanged(ValueChangedEvent<T> event) {
         setValueSilent(event.newValue());
-        this.notifyListeners(event);
+        var newEvent = new ValueChangedEvent<T>(event.oldValue(), event.newValue(), this);
+        this.notifyListeners(newEvent);
+    }
+
+    private interface Binding<T> {
+        Subscription subscription();
+    }
+
+    private record SimpleBinding<T>(Property<T> property, Subscription subscription) implements Binding<T> {
+    }
+
+    private record MappedBinding<T>(ReadonlyProperty<?> property, Subscription subscription) implements Binding<T> {
     }
 
 }

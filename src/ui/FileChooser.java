@@ -13,7 +13,7 @@ import java.io.File;
 public class FileChooser implements ActionListener {
     private final JLabel filenameLabel;
     private final JButton chooseFileButton;
-    private final Property<File> _fileProperty = new SimpleProperty<>();
+    private final SimpleProperty<File> _fileProperty = new SimpleProperty<>();
     private Component parent;
 
     public FileChooser() {
@@ -41,7 +41,11 @@ public class FileChooser implements ActionListener {
         dialog.setMultiSelectionEnabled(false);
         if (dialog.showOpenDialog(this.parent) == JFileChooser.APPROVE_OPTION) {
             var file = dialog.getSelectedFile();
-            _fileProperty.setValue(file);
+            try {
+                _fileProperty.setValue(file);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

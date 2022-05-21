@@ -2,87 +2,71 @@ package ui;
 
 import services.ServiceCollection;
 import signature.DigitalSignature;
+import signature.KeyLoader;
+import ui.property.ReadonlyProperty;
+import ui.property.SimpleProperty;
 import ui.property.ValueChangedEvent;
 import ui.utils.FileInputHelper;
+import ui.utils.Result;
 
 import javax.swing.*;
-import java.io.File;
-import java.util.Arrays;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 public class KeysPanel extends VBox {
     private static final String[] KEYGEN_ALGORITHMS = {"DiffieHellman", "DSA", "RSA", "EC"};
     private static final String[] SIGNING_ALGORITHMS = {"SHA256withRSA", "SHA384withRSA", "SHA512withRSA"};
-    private final JButton signButton;
-    private File file;
+    private final DigitalSignature digitalSignature;
+
+    private final SimpleProperty<Result<PublicKey>> _publicKeyProperty = new SimpleProperty<>();
+    private final SimpleProperty<Result<PrivateKey>> _privateKeyProperty = new SimpleProperty<>();
 
     public KeysPanel(ServiceCollection serviceCollection) {
-        var digitalSignature = serviceCollection.getInstance(DigitalSignature.class);
+        this.digitalSignature = serviceCollection.getInstance(DigitalSignature.class);
         var fileInput = buildFileInput();
-        var algorithmSelect = buildAlgorithmSelect();
 
 
-        this.signButton = new JButton("Sign");
-        signButton.addActionListener(e -> this.onSign());
-        this.updateSignButton();
+        _publicKeyProperty.addListener(this::onPublicKeyChanged);
 
-        this.setChildren(fileInput, algorithmSelect, signButton);
+        this.setChildren(fileInput);
 
+    }
+
+    public ReadonlyProperty<Result<PublicKey>> publicKeyProperty() {
+        return _publicKeyProperty;
+    }
+
+    public ReadonlyProperty<Result<PrivateKey>> privateKeyProperty() {
+        return _privateKeyProperty;
+    }
+
+    private void onPublicKeyChanged(ValueChangedEvent<Result<PublicKey>> resultValueChangedEvent) {
+        if (resultValueChangedEvent.newValue() instanceof Result.Success<PublicKey> success) {
+            digitalSignature.setPublicKey(success.value());
+        } else if (resultValueChangedEvent.newValue() instanceof Result.Failure failure) {
+            JOptionPane.showMessageDialog(
+                this,
+                failure.exception().getMessage(),
+                "Failed to load the public key",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private JPanel buildFileInput() {
         var panel = new JPanel();
 
-        var chooser = new FileChooser();
-        chooser.fileProperty().addListener(this::onFileChanged);
+        var publicKeyChooser = new FileChooser();
+        _publicKeyProperty.bind(publicKeyChooser.fileProperty(), file -> Result.Run(() -> KeyLoader.readPublicKey(file)));
+
+        var privateKeyChooser = new FileChooser();
+        _privateKeyProperty.bind(privateKeyChooser.fileProperty(), file -> Result.Run(() -> KeyLoader.readPrivateKey(file)));
 
         new FileInputHelper()
-            .add("File:", chooser)
+            .add("Public Key:", publicKeyChooser)
+            .add("Private Key:", privateKeyChooser)
             .buildLayout(panel);
 
         return panel;
     }
 
-    private JPanel buildAlgorithmSelect() {
-        var panel = new JPanel();
-        var layout = new GroupLayout(panel);
-        panel.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
-
-        var algorithmLabel = new JLabel("Algorithm:");
-        var radioButtons = Arrays.stream(SIGNING_ALGORITHMS).map(algorithm -> {
-            var button = new JRadioButton(algorithm);
-            button.setActionCommand(algorithm);
-            return button;
-        }).toList();
-        radioButtons.get(0).setSelected(true);
-        var buttonGroup = new ButtonGroup();
-        radioButtons.forEach(buttonGroup::add);
-
-        var algorithmHorizontalGroup = layout.createParallelGroup()
-            .addComponent(algorithmLabel);
-        radioButtons.forEach(algorithmHorizontalGroup::addComponent);
-        var algorithmVerticalGroup = layout.createSequentialGroup()
-            .addComponent(algorithmLabel);
-        radioButtons.forEach(algorithmVerticalGroup::addComponent);
-        layout.setHorizontalGroup(algorithmHorizontalGroup);
-        layout.setVerticalGroup(algorithmVerticalGroup);
-
-        return panel;
-    }
-
-
-    private void onSign() {
-
-    }
-
-
-    private void onFileChanged(ValueChangedEvent<File> event) {
-        this.file = event.newValue();
-        updateSignButton();
-    }
-
-    private void updateSignButton() {
-        signButton.setEnabled(this.file != null);
-    }
 }

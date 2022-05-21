@@ -27,12 +27,11 @@ public class FileInputHelper {
         var labelGroup = layout.createParallelGroup();
         items.forEach(e -> labelGroup.addComponent(e.label()));
         horizontalGroup.addGroup(labelGroup);
-        var filenameGroup = layout.createParallelGroup();
-        items.forEach(e -> filenameGroup.addComponent(e.filename()));
-        horizontalGroup.addGroup(filenameGroup);
-        var buttonGroup = layout.createParallelGroup();
-        items.forEach(e -> buttonGroup.addComponent(e.button()));
-        horizontalGroup.addGroup(buttonGroup);
+        var filenameButtonGroup = layout.createParallelGroup();
+        items.forEach(e -> filenameButtonGroup.addGroup(
+            layout.createSequentialGroup().addComponent(e.filename()).addComponent(e.button())
+        ));
+        horizontalGroup.addGroup(filenameButtonGroup);
 
         var verticalGroup = layout.createSequentialGroup();
         items.forEach(e -> verticalGroup.addGroup(

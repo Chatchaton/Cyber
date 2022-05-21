@@ -42,7 +42,11 @@ public class RadioButtonSelect<T> extends VBox {
     }
 
     private void onOptionSelected(Option<T> option) {
-        _selected.setValue(option);
+        try {
+            _selected.setValue(option);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public record Option<T>(String name, T value) {
