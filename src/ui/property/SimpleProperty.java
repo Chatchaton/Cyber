@@ -9,11 +9,12 @@ public class SimpleProperty<T> implements Property<T> {
     private Binding<T> binding;
 
     @Override
-    public void setValue(T v) throws IllegalAccessException {
+    public void setValue(T v) {
         if (this.binding instanceof SimpleBinding<T> binding) {
             binding.property().setValue(v);
         } else if (this.binding instanceof SimpleProperty.MappedBinding<T> binding) {
-            throw new IllegalAccessException();
+            var e = new IllegalAccessException();
+            throw new RuntimeException(e);
         } else {
             var oldValue = _value;
             _value = v;
@@ -25,6 +26,9 @@ public class SimpleProperty<T> implements Property<T> {
     public void bind(Property<T> property) {
         this.unbind();
         this.binding = new SimpleBinding<>(property, property.addListener(this::onBoundPropertyChanged));
+        var event = new ValueChangedEvent<>(this._value, property.value(), this);
+        this.setValueSilent(property.value());
+        this.notifyListeners(event);
     }
 
     private final List<ValueChangedListener<T>> valueChangedListeners = new ArrayList<>();
@@ -71,6 +75,10 @@ public class SimpleProperty<T> implements Property<T> {
             this.setValueSilent(mappedValue);
             this.onBoundPropertyChanged(newEvent);
         }));
+        var mappedValue = property.value() != null || mapNull ? mapper.apply(property.value()) : null;
+        var event = new ValueChangedEvent<>(this._value, mappedValue, this);
+        this.setValueSilent(mappedValue);
+        this.notifyListeners(event);
     }
 
     private void notifyListeners(ValueChangedEvent<T> event) {

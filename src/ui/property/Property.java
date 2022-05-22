@@ -1,7 +1,7 @@
 package ui.property;
 
 public interface Property<T> extends ReadonlyProperty<T> {
-    void setValue(T v) throws IllegalAccessException;
+    void setValue(T v);
 
     void setValueSilent(T v);
 }
