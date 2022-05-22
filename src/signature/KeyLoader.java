@@ -1,7 +1,11 @@
 package signature;
 
+import ui.utils.OutputStreamHelper;
+import ui.utils.Result;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -15,26 +19,36 @@ import java.util.InputMismatchException;
 
 public class KeyLoader {
 
-    private static String substringBetween(String source, String begin, String end) {
-        var beginIndex = source.indexOf(begin);
-        if (beginIndex == -1) {
-            throw new InputMismatchException("Begin string not found: \"" + begin + "\"");
-        }
-        var contentIndex = beginIndex + begin.length();
-        var endIndex = source.indexOf(end, contentIndex);
-        if (endIndex == -1) {
-            throw new InputMismatchException("End string not found: \"" + end + "\"");
-        }
-        return source.substring(contentIndex, endIndex);
+    public static final String BEGIN_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----";
+    public static final String END_PUBLIC_KEY = "-----END PUBLIC KEY-----";
+    public static final String BEGIN_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----";
+    public static final String END_PRIVATE_KEY = "-----END PRIVATE KEY-----";
+
+    private static Result<String> substringBetween(String source, String begin, String end) {
+        return Result.run(() -> {
+            var beginIndex = source.indexOf(begin);
+            if (beginIndex == -1) {
+                throw new InputMismatchException("Begin string not found: \"" + begin + "\"");
+            }
+            var contentIndex = beginIndex + begin.length();
+            var endIndex = source.indexOf(end, contentIndex);
+            if (endIndex == -1) {
+                throw new InputMismatchException("End string not found: \"" + end + "\"");
+            }
+            return source.substring(contentIndex, endIndex);
+        });
     }
 
     public static PublicKey readPublicKey(File file) {
         try {
             var allBytes = readAllBytes(file);
             var str = new String(allBytes);
-            var stripped = substringBetween(str, "-----BEGIN PUBLIC KEY-----", "-----END PUBLIC KEY-----");
-            var bytes = Base64.getDecoder().decode(stripped);
-            var spec = new X509EncodedKeySpec(bytes);
+            var spec =
+                substringBetween(str, BEGIN_PUBLIC_KEY, END_PUBLIC_KEY)
+                    .map(value -> value.replaceAll(System.lineSeparator(), ""))
+                    .map(value -> Base64.getDecoder().decode(value))
+                    .map(X509EncodedKeySpec::new)
+                    .get();
             return KeyFactory.getInstance("RSA").generatePublic(spec);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new RuntimeException(e);
@@ -45,12 +59,32 @@ public class KeyLoader {
         try {
             var allBytes = readAllBytes(file);
             var str = new String(allBytes);
-            var stripped = substringBetween(str, "-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----");
-            var bytes = Base64.getDecoder().decode(stripped);
-            var spec = new PKCS8EncodedKeySpec(bytes);
+            var spec = substringBetween(str, "-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----")
+                .map(value -> value.replaceAll(System.lineSeparator(), ""))
+                .map(value -> Base64.getDecoder().decode(value))
+                .map(PKCS8EncodedKeySpec::new)
+                .get();
             return KeyFactory.getInstance("RSA").generatePrivate(spec);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void writePrivateKey(PrivateKey key, File file) throws IOException {
+        try (var stream = new FileOutputStream(file)) {
+            new OutputStreamHelper(stream)
+                .write(BEGIN_PRIVATE_KEY).newLine()
+                .writeBase64(key.getEncoded()).newLine()
+                .write(END_PRIVATE_KEY).newLine();
+        }
+    }
+
+    public static void writePublicKey(PublicKey key, File file) throws IOException {
+        try (var stream = new FileOutputStream(file)) {
+            new OutputStreamHelper(stream)
+                .write(BEGIN_PUBLIC_KEY).newLine()
+                .writeBase64(key.getEncoded()).newLine()
+                .write(END_PUBLIC_KEY).newLine();
         }
     }
 

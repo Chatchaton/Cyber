@@ -16,13 +16,34 @@ public class FileChooser implements ActionListener {
     private final SimpleProperty<File> _fileProperty = new SimpleProperty<>();
     private Component parent;
 
+    public static final String MODE_OPEN = "MODE_OPEN";
+    public static final String MODE_SAVE = "MODE_SAVE";
+    private String _mode = MODE_OPEN;
+
     public FileChooser() {
+        this(MODE_OPEN);
+    }
+
+    public FileChooser(String mode) {
         this.filenameLabel = new JLabel();
         this.chooseFileButton = new JButton();
         this.chooseFileButton.setText("Choose file");
         this.chooseFileButton.addActionListener(this);
         this._fileProperty.addListener(this::onFileChanged);
+        this.setMode(mode);
     }
+
+    public String mode() {
+        return _mode;
+    }
+
+    public void setMode(String mode) {
+        switch (mode) {
+            case MODE_OPEN, MODE_SAVE -> this._mode = mode;
+            default -> throw new RuntimeException(new IllegalArgumentException(mode));
+        }
+    }
+
 
     public Property<File> fileProperty() {
         return _fileProperty;
@@ -39,7 +60,13 @@ public class FileChooser implements ActionListener {
         var dialog = new JFileChooser();
         dialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
         dialog.setMultiSelectionEnabled(false);
-        if (dialog.showOpenDialog(this.parent) == JFileChooser.APPROVE_OPTION) {
+        var result = switch (_mode) {
+            case MODE_OPEN -> dialog.showOpenDialog(this.parent);
+            case MODE_SAVE -> dialog.showSaveDialog(this.parent);
+            default ->
+                throw new RuntimeException(new IllegalStateException("Property mode has value: \"" + _mode + "\""));
+        };
+        if (result == JFileChooser.APPROVE_OPTION) {
             var file = dialog.getSelectedFile();
             _fileProperty.setValue(file);
         }
