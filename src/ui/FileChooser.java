@@ -41,11 +41,7 @@ public class FileChooser implements ActionListener {
         dialog.setMultiSelectionEnabled(false);
         if (dialog.showOpenDialog(this.parent) == JFileChooser.APPROVE_OPTION) {
             var file = dialog.getSelectedFile();
-            try {
-                _fileProperty.setValue(file);
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException(ex);
-            }
+            _fileProperty.setValue(file);
         }
     }
 
