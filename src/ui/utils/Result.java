@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 public abstract class Result<T> {
 
-    public static <T> Result<T> run(Function0<T> fun) {
+    public static <T> Result<T> run(ThrowingFunction0<T> fun) {
         try {
             return success(fun.apply());
         } catch (Exception e) {
@@ -13,7 +13,7 @@ public abstract class Result<T> {
         }
     }
 
-    public static <T> Result<T> tryRun(Function0<Result<T>> fun) {
+    public static <T> Result<T> tryRun(ThrowingFunction0<Result<T>> fun) {
         try {
             return fun.apply();
         } catch (Exception e) {
@@ -38,11 +38,11 @@ public abstract class Result<T> {
         return fun.apply();
     }
 
-    public abstract <R> Result<R> map(Function<T, R> mapper);
+    public abstract <R> Result<R> map(ThrowingFunction<T, R> mapper);
 
-    public abstract <R> Result<R> flatMap(Function<T, Result<R>> mapper);
+    public abstract <R> Result<R> flatMap(ThrowingFunction<T, Result<R>> mapper);
 
-    public Result<T> recover(Function<Exception, T> fun) {
+    public Result<T> recover(ThrowingFunction<Exception, T> fun) {
         if (this instanceof Failure failure) {
             return Result.run(() -> fun.apply(failure.exception()));
         } else {
@@ -125,12 +125,12 @@ public abstract class Result<T> {
         }
 
         @Override
-        public <R> Result<R> map(Function<T, R> mapper) {
+        public <R> Result<R> map(ThrowingFunction<T, R> mapper) {
             return Result.run(() -> mapper.apply(value));
         }
 
         @Override
-        public <R> Result<R> flatMap(Function<T, Result<R>> mapper) {
+        public <R> Result<R> flatMap(ThrowingFunction<T, Result<R>> mapper) {
             try {
                 return mapper.apply(value);
             } catch (Exception e) {
@@ -171,12 +171,12 @@ public abstract class Result<T> {
         }
 
         @Override
-        public Failure map(Function mapper) {
+        public Failure map(ThrowingFunction mapper) {
             return this;
         }
 
         @Override
-        public Failure flatMap(Function mapper) {
+        public Failure flatMap(ThrowingFunction mapper) {
             return this;
         }
     }

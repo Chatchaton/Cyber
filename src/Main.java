@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
 
-        DigitalSignature digitalSignature = new DigitalSignature("SHA256withRSA");
+        DigitalSignature digitalSignature = new DigitalSignature();
 
         File dummyfile = new File("src\\msg.txt");
         digitalSignature.calculateMessageBytes(Path.of(dummyfile.getAbsolutePath()));

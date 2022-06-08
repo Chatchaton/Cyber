@@ -14,7 +14,7 @@ public class MainFrame extends JFrame {
         super("Cyber");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        serviceCollection.setSingleton(DigitalSignature.class, new DigitalSignature("SHA256withRSA"));
+        serviceCollection.setSingleton(DigitalSignature.class, new DigitalSignature());
 
         buildComponents();
 

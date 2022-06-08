@@ -38,10 +38,22 @@ public interface DigitalSignatureInterface {
     void setKeyPairGen(KeyPairGenerator keyPairGen);
 
     PublicKey getPublicKey();
+
     PrivateKey getPrivateKey();
+
     Signature getSignature();
+
     byte[] getSignBytes();
+
     byte[] getMsgBytes();
+
     KeyPair getKeyPair();
+
     KeyPairGenerator getKeyPairGenerator();
+
+    String getKeyAlgorithm();
+
+    void setKeyAlgorithm(String keyAlgorithm);
+
+    String[] getSupportedKeyAlgorithms();
 }

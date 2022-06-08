@@ -2,7 +2,8 @@ package ui
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.stage.Modality
-import signature.KeyLoader
+import signature.readPrivateKey
+import signature.readPublicKey
 import tornadofx.*
 import java.io.File
 
@@ -49,8 +50,6 @@ class KeyView : View() {
                             if (it.result) {
                                 publicKeyFile = it.publicKeyFile
                                 privateKeyFile = it.privateKeyFile
-                                publicKey = it.publicKey
-                                privateKey = it.privateKey
                             }
                         }
                     }
@@ -61,7 +60,7 @@ class KeyView : View() {
 
     private fun loadPublicKey(file: File) {
         try {
-            publicKey = KeyLoader.readPublicKey(file)
+            publicKey = readPublicKey(file.toPath()).getOrThrow()
             publicKeyFile = file
 
         } catch (ex: Exception) {
@@ -71,7 +70,7 @@ class KeyView : View() {
 
     private fun loadPrivateKey(file: File) {
         try {
-            privateKey = KeyLoader.readPrivateKey(file)
+            privateKey = readPrivateKey(file.toPath()).getOrThrow()
             privateKeyFile = file
 
         } catch (ex: Exception) {

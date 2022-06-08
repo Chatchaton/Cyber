@@ -23,6 +23,8 @@ public class KeyLoader {
     public static final String END_PUBLIC_KEY = "-----END PUBLIC KEY-----";
     public static final String BEGIN_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----";
     public static final String END_PRIVATE_KEY = "-----END PRIVATE KEY-----";
+    public static final String BEGIN_DSA_PRIVATE_KEY = "-----BEGIN DSA PRIVATE KEY-----";
+    public static final String END_DSA_PRIVATE_KEY = "-----END DSA PRIVATE KEY-----";
 
     private static Result<String> substringBetween(String source, String begin, String end) {
         return Result.run(() -> {
@@ -39,6 +41,7 @@ public class KeyLoader {
         });
     }
 
+    @Deprecated
     public static PublicKey readPublicKey(File file) {
         try {
             var allBytes = readAllBytes(file);
@@ -55,21 +58,23 @@ public class KeyLoader {
         }
     }
 
+    @Deprecated
     public static PrivateKey readPrivateKey(File file) {
         try {
             var allBytes = readAllBytes(file);
             var str = new String(allBytes);
-            var spec = substringBetween(str, "-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----")
+            return substringBetween(str, BEGIN_PRIVATE_KEY, END_PRIVATE_KEY)
                 .map(value -> value.replaceAll(System.lineSeparator(), ""))
                 .map(value -> Base64.getDecoder().decode(value))
                 .map(PKCS8EncodedKeySpec::new)
+                .map(spec -> KeyFactory.getInstance("RSA").generatePrivate(spec))
                 .get();
-            return KeyFactory.getInstance("RSA").generatePrivate(spec);
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Deprecated
     public static void writePrivateKey(PrivateKey key, File file) throws IOException {
         try (var stream = new FileOutputStream(file)) {
             new OutputStreamHelper(stream)
@@ -79,6 +84,7 @@ public class KeyLoader {
         }
     }
 
+    @Deprecated
     public static void writePublicKey(PublicKey key, File file) throws IOException {
         try (var stream = new FileOutputStream(file)) {
             new OutputStreamHelper(stream)

@@ -45,8 +45,8 @@ class AuthenticateView : View() {
                         try {
                             signatureController.calculateMessageBytes(file!!.toPath())
                             val result = signatureController.verifySignature(signature!!.toPath())
-                            if (result) information("Verification failed")
-                            else error("Verification successful")
+                            if (result) information("Verification successful")
+                            else error("Verification failed")
                         } catch (ex: java.lang.Exception) {
                             error("Exception", content = ex.message)
                         }

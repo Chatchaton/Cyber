@@ -1,12 +1,12 @@
 package ui
 
-import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleObjectProperty
-import signature.KeyLoader
+import javafx.beans.property.SimpleStringProperty
+import javafx.scene.control.ToggleGroup
+import signature.writePrivateKey
+import signature.writePublicKey
 import tornadofx.*
 import java.io.File
-import java.security.PrivateKey
-import java.security.PublicKey
 
 class GenerateKeysFragment : Fragment("Generate keys") {
 
@@ -15,12 +15,10 @@ class GenerateKeysFragment : Fragment("Generate keys") {
     val privateKeyFileProperty = SimpleObjectProperty<File?>()
     var privateKeyFile by privateKeyFileProperty
 
-    val publicKeyProperty = SimpleObjectProperty<PublicKey?>()
-    var publicKey by publicKeyProperty
-    val privateKeyProperty = SimpleObjectProperty<PrivateKey>()
-    var privateKey by privateKeyProperty
-
     private val signatureController by inject<SignatureController>()
+
+    val keyAlgorithmProperty = SimpleStringProperty(signatureController.keyAlgorithm)
+    var keyAlgorithm by keyAlgorithmProperty
 
     var result = false
 
@@ -32,7 +30,9 @@ class GenerateKeysFragment : Fragment("Generate keys") {
                     text(publicKeyFileProperty.stringBinding { it?.name })
                     button("choose") {
                         action {
-                            chooseFile("Save public key", emptyArray(), mode = FileChooserMode.Save).firstOrNull()
+                            chooseFile("Save public key", emptyArray(), mode = FileChooserMode.Save) {
+                                initialFileName = "key.public.pem"
+                            }.firstOrNull()
                                 ?.let {
                                     publicKeyFile = it
                                 }
@@ -43,19 +43,31 @@ class GenerateKeysFragment : Fragment("Generate keys") {
                     text(privateKeyFileProperty.stringBinding { it?.name })
                     button("choose") {
                         action {
-                            chooseFile("Save private key", emptyArray(), mode = FileChooserMode.Save).firstOrNull()
+                            chooseFile("Save private key", emptyArray(), mode = FileChooserMode.Save) {
+                                initialFileName = "key.private.pem"
+                            }.firstOrNull()
                                 ?.let {
                                     privateKeyFile = it
                                 }
                         }
                     }
                 }
+                field("Algorithm:") {
+                    val toggleGroup = ToggleGroup()
+                    signatureController.supportedKeyAlgorithms.forEach {
+                        radiobutton(it, toggleGroup) {
+                            isSelected = keyAlgorithm == it
+                            action {
+                                keyAlgorithm = it
+                            }
+                        }
+
+                    }
+                }
                 button("generate") {
-                    enableWhen(
-                        Bindings.and(
-                            publicKeyFileProperty.booleanBinding { it != null },
-                            privateKeyFileProperty.booleanBinding { it != null })
-                    )
+                    enableWhen {
+                        publicKeyFileProperty.isNotNull and privateKeyFileProperty.isNotNull
+                    }
                     action {
                         generate()
                     }
@@ -66,18 +78,17 @@ class GenerateKeysFragment : Fragment("Generate keys") {
 
     private fun generate() {
         try {
-            signatureController.digitalSignature.generateKeyPair()
-            publicKey = signatureController.digitalSignature.publicKey
-            privateKey = signatureController.digitalSignature.privateKey
+            signatureController.keyAlgorithm = keyAlgorithm
+            signatureController.generateKeyPair()
         } catch (ex: Exception) {
-            error("Failed to generate keys", content = ex.message).showAndWait()
+            error("Failed to generate keys", content = ex.message)
             return
         }
         try {
-            KeyLoader.writePublicKey(publicKey, publicKeyFile)
-            KeyLoader.writePrivateKey(privateKey, privateKeyFile)
+            writePublicKey(publicKeyFile!!.toPath(), signatureController.publicKey).getOrThrow()
+            writePrivateKey(privateKeyFile!!.toPath(), signatureController.privateKey).getOrThrow()
         } catch (ex: Exception) {
-            error("Failed to save keys", content = ex.message).showAndWait()
+            error("Failed to save keys", content = ex.message)
             return
         }
         result = true

@@ -1,7 +1,9 @@
 package ui
 
 import javafx.beans.property.ReadOnlyObjectProperty
+import javafx.beans.property.ReadOnlyStringProperty
 import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import signature.DigitalSignature
 import signature.DigitalSignatureInterface
 import tornadofx.*
@@ -9,7 +11,7 @@ import java.security.KeyPair
 import java.security.PrivateKey
 import java.security.PublicKey
 
-class SignatureController(val digitalSignature: DigitalSignatureInterface = DigitalSignature("SHA256withRSA")) :
+class SignatureController(val digitalSignature: DigitalSignatureInterface = DigitalSignature()) :
     Controller(),
     DigitalSignatureInterface by digitalSignature {
 
@@ -19,6 +21,10 @@ class SignatureController(val digitalSignature: DigitalSignatureInterface = Digi
     private val _privateKeyProperty = SimpleObjectProperty<PrivateKey?>()
     val privateKeyProperty: ReadOnlyObjectProperty<PrivateKey?>
         get() = _privateKeyProperty
+
+    private val _keyAlgorithmProperty = SimpleStringProperty(digitalSignature.keyAlgorithm)
+    val keyAlgorithmProperty: ReadOnlyStringProperty
+        get() = _keyAlgorithmProperty
 
 
     override fun generateKeyPair() {
@@ -41,6 +47,11 @@ class SignatureController(val digitalSignature: DigitalSignatureInterface = Digi
         digitalSignature.keyPair = keyPair
         _publicKeyProperty.set(keyPair?.public)
         _privateKeyProperty.set(keyPair?.private)
+    }
+
+    override fun setKeyAlgorithm(keyAlgorithm: String) {
+        digitalSignature.keyAlgorithm = keyAlgorithm
+        _keyAlgorithmProperty.set(keyAlgorithm)
     }
 
 }

@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.*;
+import java.util.Arrays;
 
 public class DigitalSignature implements DigitalSignatureInterface {
     private KeyPairGenerator keyPairGen;
@@ -14,14 +15,14 @@ public class DigitalSignature implements DigitalSignatureInterface {
     private Signature signature;
     private byte[] signatureBytes;
     private byte[] msgBytes;
-    private final String signatureType;
+    public static final String[] supportedKeyAlgorithms = {"RSA", "DSA"};
+    private String keyAlgorithm = supportedKeyAlgorithms[0];
 
 
-    public DigitalSignature(String signatureType) throws NoSuchAlgorithmException, InvalidKeyException {
-        this.signatureType = signatureType;
+    public DigitalSignature() throws NoSuchAlgorithmException, InvalidKeyException {
         generateKeyPair();
         var privateKey = getPrivateKey();
-        createSignature(privateKey, signatureType);
+        createSignature(privateKey, getSignatureType());
     }
 
     @Override
@@ -33,20 +34,20 @@ public class DigitalSignature implements DigitalSignatureInterface {
 
     @Override
     public void initializeSignature() throws NoSuchAlgorithmException, InvalidKeyException {
-        createSignature(privateKey, signatureType);
+        createSignature(privateKey, getSignatureType());
     }
 
     @Override
     public void generateKeyPair() throws NoSuchAlgorithmException {
         //Creating KeyPair generator object
         //TODO RSA and DSA depending on user input i.e SHA256withXXX
-        setKeyPairGen(KeyPairGenerator.getInstance("RSA"));
+        setKeyPairGen(KeyPairGenerator.getInstance(keyAlgorithm));
 
         //Initializing the key pair generator
         getKeyPairGenerator().initialize(2048);
 
         //Generate the pair of keys
-        setKeyPair( getKeyPairGenerator().generateKeyPair());
+        setKeyPair(getKeyPairGenerator().generateKeyPair());
         setPrivateKey(getKeyPair().getPrivate());
         setPublicKey(getKeyPair().getPublic());
     }
@@ -68,7 +69,7 @@ public class DigitalSignature implements DigitalSignatureInterface {
     @Override
     public void saveSignature(Path path) throws IOException {
         //save SignatureMeta
-        Files.write(path,getSignBytes());
+        Files.write(path, getSignBytes());
     }
 
     @Override
@@ -92,7 +93,7 @@ public class DigitalSignature implements DigitalSignatureInterface {
 
     @Override
     public void print_signature() {
-        System.out.println("Digital SignatureMeta for given text: "+new String(getSignBytes(), StandardCharsets.UTF_8));
+        System.out.println("Digital SignatureMeta for given text: " + new String(getSignBytes(), StandardCharsets.UTF_8));
     }
 
     @Override
@@ -166,4 +167,25 @@ public class DigitalSignature implements DigitalSignatureInterface {
         return this.privateKey;
     }
 
+    @Override
+    public String getKeyAlgorithm() {
+        return keyAlgorithm;
+    }
+
+    @Override
+    public void setKeyAlgorithm(String keyAlgorithm) {
+        if (!Arrays.asList(supportedKeyAlgorithms).contains(keyAlgorithm)) {
+            throw new IllegalArgumentException(keyAlgorithm);
+        }
+        this.keyAlgorithm = keyAlgorithm;
+    }
+
+    public String getSignatureType() {
+        return "SHA256with" + keyAlgorithm;
+    }
+
+    @Override
+    public String[] getSupportedKeyAlgorithms() {
+        return supportedKeyAlgorithms;
+    }
 }
