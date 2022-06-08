@@ -14,19 +14,26 @@ public class DigitalSignature implements DigitalSignatureInterface {
     private Signature signature;
     private byte[] signatureBytes;
     private byte[] msgBytes;
+    private final String signatureType;
 
 
-    public DigitalSignature(String signature) throws NoSuchAlgorithmException, InvalidKeyException {
+    public DigitalSignature(String signatureType) throws NoSuchAlgorithmException, InvalidKeyException {
+        this.signatureType = signatureType;
         generateKeyPair();
         var privateKey = getPrivateKey();
-        createSignature(privateKey,signature);
+        createSignature(privateKey, signatureType);
     }
 
     @Override
-    public void createSignature(PrivateKey key, String signature)throws NoSuchAlgorithmException, InvalidKeyException {
+    public void createSignature(PrivateKey key, String signature) throws NoSuchAlgorithmException, InvalidKeyException {
         //Creating a Signature object
         setSignature(Signature.getInstance(signature));
         getSignature().initSign(key);
+    }
+
+    @Override
+    public void initializeSignature() throws NoSuchAlgorithmException, InvalidKeyException {
+        createSignature(privateKey, signatureType);
     }
 
     @Override
@@ -70,16 +77,11 @@ public class DigitalSignature implements DigitalSignatureInterface {
     }
 
     @Override
-    public void verifySignature(Path path) throws InvalidKeyException, SignatureException, IOException {
+    public boolean verifySignature(Path path) throws InvalidKeyException, SignatureException, IOException {
         getSignature().initVerify(getPublicKey());
         updateSignature();
         byte[] sig = Files.readAllBytes(path);
-        boolean bool = getSignature().verify(sig);
-        if(bool) {
-            System.out.println("Signature verified");
-        } else {
-            System.out.println("Signature failed");
-        }
+        return getSignature().verify(sig);
     }
 
 

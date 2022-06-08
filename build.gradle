@@ -22,6 +22,10 @@ sourceSets {
     }
 }
 
+compileJava {
+
+}
+
 compileKotlin {
     kotlinOptions.jvmTarget = "11"
 }

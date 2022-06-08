@@ -2,16 +2,18 @@ package signature;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.*;
 
 public interface DigitalSignatureInterface {
-    void verifySignature(Path path) throws InvalidKeyException, SignatureException, IOException;
+    boolean verifySignature(Path path) throws InvalidKeyException, SignatureException, IOException;
 
     void type_format(Key key);
+
     void print_signature();
 
-    void createSignature(PrivateKey key, String signature)throws NoSuchAlgorithmException, InvalidKeyException;
+    void createSignature(PrivateKey key, String signature) throws NoSuchAlgorithmException, InvalidKeyException;
+
+    void initializeSignature() throws NoSuchAlgorithmException, InvalidKeyException;
 
     void generateKeyPair() throws NoSuchAlgorithmException;
 
@@ -20,6 +22,7 @@ public interface DigitalSignatureInterface {
     void calculateSignature() throws SignatureException, IOException;
 
     void saveSignature(Path path) throws IOException;
+
     void calculateMessageBytes(Path path) throws IOException;
 
     void setSignature(Signature signature);
