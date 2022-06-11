@@ -56,4 +56,10 @@ public interface DigitalSignatureInterface {
     void setKeyAlgorithm(String keyAlgorithm);
 
     String[] getSupportedKeyAlgorithms();
+
+    String getHashAlgorithm();
+
+    void setHashAlgorithm(String hashAlgorithm);
+
+    String[] getSupportedHashAlgorithms();
 }

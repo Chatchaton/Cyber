@@ -17,6 +17,8 @@ public class DigitalSignature implements DigitalSignatureInterface {
     private byte[] msgBytes;
     public static final String[] supportedKeyAlgorithms = {"RSA", "DSA"};
     private String keyAlgorithm = supportedKeyAlgorithms[0];
+    public static final String[] supportedHashAlgorithms = {"SHA256", "SHA512", "SHA3-256", "SHA3-512"};
+    private String hashAlgorithm = supportedHashAlgorithms[0];
 
 
     public DigitalSignature() throws NoSuchAlgorithmException, InvalidKeyException {
@@ -180,12 +182,30 @@ public class DigitalSignature implements DigitalSignatureInterface {
         this.keyAlgorithm = keyAlgorithm;
     }
 
-    public String getSignatureType() {
-        return "SHA256with" + keyAlgorithm;
-    }
-
     @Override
     public String[] getSupportedKeyAlgorithms() {
         return supportedKeyAlgorithms;
+    }
+
+    @Override
+    public String getHashAlgorithm() {
+        return hashAlgorithm;
+    }
+
+    @Override
+    public void setHashAlgorithm(String hashAlgorithm) {
+        if (!Arrays.asList(supportedHashAlgorithms).contains(hashAlgorithm)) {
+            throw new IllegalArgumentException(hashAlgorithm);
+        }
+        this.hashAlgorithm = hashAlgorithm;
+    }
+
+    @Override
+    public String[] getSupportedHashAlgorithms() {
+        return supportedKeyAlgorithms;
+    }
+
+    public String getSignatureType() {
+        return hashAlgorithm + "with" + keyAlgorithm;
     }
 }
