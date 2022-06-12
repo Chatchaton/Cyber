@@ -14,7 +14,7 @@ public class Main {
 
         File dummyfile = new File("src\\msg.txt");
         digitalSignature.calculateMessageBytes(Path.of(dummyfile.getAbsolutePath()));
-        digitalSignature.calculateSignature();
+        //digitalSignature.createSignatureFile();
         digitalSignature.print_signature();
 
         SignatureMeta signatureMeta = new SignatureMeta(digitalSignature.getSignBytes(),"Auth");

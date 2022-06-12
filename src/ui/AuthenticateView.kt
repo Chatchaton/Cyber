@@ -1,8 +1,11 @@
 package ui
 
 import javafx.beans.property.SimpleObjectProperty
+import signature.SignatureFile
 import tornadofx.*
 import java.io.File
+import java.io.FileInputStream
+import java.io.ObjectInputStream
 
 class AuthenticateView : View() {
 
@@ -43,8 +46,10 @@ class AuthenticateView : View() {
                     }
                     action {
                         try {
-                            signatureController.calculateMessageBytes(file!!.toPath())
-                            val result = signatureController.verifySignature(signature!!.toPath())
+                            val signatureFile = ObjectInputStream(FileInputStream(signature!!)).use {
+                                it.readObject() as SignatureFile
+                            }
+                            val result = signatureController.verifySignature(signatureFile, file!!.readBytes())
                             if (result) information("Verification successful")
                             else error("Verification failed")
                         } catch (ex: java.lang.Exception) {

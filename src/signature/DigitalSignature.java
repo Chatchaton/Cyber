@@ -19,6 +19,7 @@ public class DigitalSignature implements DigitalSignatureInterface {
     private String keyAlgorithm = supportedKeyAlgorithms[0];
     public static final String[] supportedHashAlgorithms = {"SHA256", "SHA512", "SHA3-256", "SHA3-512"};
     private String hashAlgorithm = supportedHashAlgorithms[0];
+    private String author;
 
 
     public DigitalSignature() throws NoSuchAlgorithmException, InvalidKeyException {
@@ -37,6 +38,18 @@ public class DigitalSignature implements DigitalSignatureInterface {
     @Override
     public void initializeSignature() throws NoSuchAlgorithmException, InvalidKeyException {
         createSignature(privateKey, getSignatureType());
+    }
+
+    private void initializeSignatureForSigning() throws NoSuchAlgorithmException, InvalidKeyException {
+        setKeyAlgorithm(privateKey.getAlgorithm());
+        setSignature(Signature.getInstance(getSignatureType()));
+        getSignature().initSign(privateKey);
+    }
+
+    private void initializeSignatureForVerifying() throws NoSuchAlgorithmException, InvalidKeyException {
+        setKeyAlgorithm(publicKey.getAlgorithm());
+        setSignature(Signature.getInstance(getSignatureType()));
+        getSignature().initVerify(publicKey);
     }
 
     @Override
@@ -61,11 +74,24 @@ public class DigitalSignature implements DigitalSignatureInterface {
         getSignature().update(getMsgBytes());
     }
 
+    private void updateSignature(byte[] message) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        var updater = new SignatureUpdater(signature);
+        updater.update(message.length);
+        updater.update(message);
+        updater.update(author);
+        updater.update(hashAlgorithm);
+    }
+
     @Override
-    public void calculateSignature() throws SignatureException {
-        //Calculating the Signature
-        updateSignature();
-        setSignBytes(getSignature().sign());
+    public SignatureFile createSignatureFile(byte[] message) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+        var file = new SignatureFile();
+        initializeSignatureForSigning();
+        updateSignature(message);
+        var bytes = signature.sign();
+        file.setSignature(bytes);
+        file.setAuthor(author);
+        file.setHashAlgorithm(hashAlgorithm);
+        return file;
     }
 
     @Override
@@ -85,6 +111,15 @@ public class DigitalSignature implements DigitalSignatureInterface {
         updateSignature();
         byte[] sig = Files.readAllBytes(path);
         return getSignature().verify(sig);
+    }
+
+    @Override
+    public boolean verifySignature(SignatureFile file, byte[] message) throws InvalidKeyException, SignatureException, NoSuchAlgorithmException {
+        setAuthor(file.getAuthor());
+        setHashAlgorithm(file.getHashAlgorithm());
+        initializeSignatureForVerifying();
+        updateSignature(message);
+        return getSignature().verify(file.getSignature());
     }
 
 
@@ -202,10 +237,20 @@ public class DigitalSignature implements DigitalSignatureInterface {
 
     @Override
     public String[] getSupportedHashAlgorithms() {
-        return supportedKeyAlgorithms;
+        return supportedHashAlgorithms;
     }
 
     public String getSignatureType() {
         return hashAlgorithm + "with" + keyAlgorithm;
+    }
+
+    @Override
+    public String getAuthor() {
+        return author;
+    }
+
+    @Override
+    public void setAuthor(String author) {
+        this.author = author;
     }
 }

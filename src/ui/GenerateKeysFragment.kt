@@ -31,7 +31,7 @@ class GenerateKeysFragment : Fragment("Generate keys") {
                     button("choose") {
                         action {
                             chooseFile("Save public key", emptyArray(), mode = FileChooserMode.Save) {
-                                initialFileName = "key.public.pem"
+                                initialFileName = "key.public"
                             }.firstOrNull()
                                 ?.let {
                                     publicKeyFile = it
@@ -44,7 +44,7 @@ class GenerateKeysFragment : Fragment("Generate keys") {
                     button("choose") {
                         action {
                             chooseFile("Save private key", emptyArray(), mode = FileChooserMode.Save) {
-                                initialFileName = "key.private.pem"
+                                initialFileName = "key.private"
                             }.firstOrNull()
                                 ?.let {
                                     privateKeyFile = it

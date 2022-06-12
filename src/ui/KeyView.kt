@@ -64,7 +64,7 @@ class KeyView : View() {
             publicKeyFile = file
 
         } catch (ex: Exception) {
-            error("Failed to load the public key.", content = ex.message).showAndWait()
+            error("Failed to load the public key.", content = ex.message)
         }
     }
 
@@ -74,7 +74,7 @@ class KeyView : View() {
             privateKeyFile = file
 
         } catch (ex: Exception) {
-            error("Failed to load the private key.", content = ex.message).showAndWait()
+            error("Failed to load the private key.", content = ex.message)
         }
     }
 
