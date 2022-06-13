@@ -10,6 +10,7 @@ import java.io.File
 class KeyView : View() {
 
     val signatureController by inject<SignatureController>()
+    val fileChooserController: FileChooserController by inject()
 
     var publicKey by signatureController::publicKey
     val publicKeyFileProperty = SimpleObjectProperty<File?>()
@@ -27,7 +28,7 @@ class KeyView : View() {
                     text(publicKeyFileProperty.stringBinding { it?.name })
                     button("choose") {
                         action {
-                            chooseFile("Choose public key", emptyArray()).firstOrNull()?.let {
+                            fileChooserController.chooseFile("Choose public key").firstOrNull()?.let {
                                 loadPublicKey(it)
                             }
                         }
@@ -37,7 +38,7 @@ class KeyView : View() {
                     text(privateKeyFileProperty.stringBinding { it?.name })
                     button("choose") {
                         action {
-                            chooseFile("Choose private key", emptyArray()).firstOrNull()?.let {
+                            fileChooserController.chooseFile("Choose private key").firstOrNull()?.let {
                                 loadPrivateKey(it)
                             }
                         }

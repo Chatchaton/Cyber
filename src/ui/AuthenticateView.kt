@@ -10,6 +10,7 @@ import java.io.ObjectInputStream
 class AuthenticateView : View() {
 
     val signatureController: SignatureController by inject()
+    val fileChooserController: FileChooserController by inject()
 
     val fileProperty = SimpleObjectProperty<File?>()
     var file by fileProperty
@@ -24,7 +25,7 @@ class AuthenticateView : View() {
                     text(fileProperty.stringBinding { it?.name })
                     button("choose") {
                         action {
-                            chooseFile("Choose file to authenticate", emptyArray()).firstOrNull().let {
+                            fileChooserController.chooseFile("Choose file to authenticate").firstOrNull().let {
                                 file = it
                             }
                         }
@@ -34,7 +35,7 @@ class AuthenticateView : View() {
                     text(signatureProperty.stringBinding { it?.name })
                     button("choose") {
                         action {
-                            chooseFile("Choose signature", emptyArray()).firstOrNull().let {
+                            fileChooserController.chooseFile("Choose signature").firstOrNull().let {
                                 signature = it
                             }
                         }

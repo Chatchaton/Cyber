@@ -16,6 +16,7 @@ class GenerateKeysFragment : Fragment("Generate keys") {
     var privateKeyFile by privateKeyFileProperty
 
     private val signatureController by inject<SignatureController>()
+    val fileChooserController: FileChooserController by inject()
 
     val keyAlgorithmProperty = SimpleStringProperty(signatureController.keyAlgorithm)
     var keyAlgorithm by keyAlgorithmProperty
@@ -30,7 +31,7 @@ class GenerateKeysFragment : Fragment("Generate keys") {
                     text(publicKeyFileProperty.stringBinding { it?.name })
                     button("choose") {
                         action {
-                            chooseFile("Save public key", emptyArray(), mode = FileChooserMode.Save) {
+                            fileChooserController.chooseFile("Save public key", mode = FileChooserMode.Save) {
                                 initialFileName = "key.public"
                             }.firstOrNull()
                                 ?.let {
@@ -43,7 +44,7 @@ class GenerateKeysFragment : Fragment("Generate keys") {
                     text(privateKeyFileProperty.stringBinding { it?.name })
                     button("choose") {
                         action {
-                            chooseFile("Save private key", emptyArray(), mode = FileChooserMode.Save) {
+                            fileChooserController.chooseFile("Save private key", mode = FileChooserMode.Save) {
                                 initialFileName = "key.private"
                             }.firstOrNull()
                                 ?.let {

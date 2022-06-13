@@ -12,6 +12,7 @@ import kotlin.io.path.name
 class SignView : View() {
 
     val signatureController: SignatureController by inject()
+    val fileChooserController: FileChooserController by inject()
 
     val fileProperty = SimpleObjectProperty<File?>()
     var file by fileProperty
@@ -30,7 +31,7 @@ class SignView : View() {
                     text(filename)
                     button("choose") {
                         action {
-                            chooseFile("Choose file to sign", emptyArray()).firstOrNull().let {
+                            fileChooserController.chooseFile("Choose file to sign").firstOrNull().let {
                                 file = it
                             }
                         }
