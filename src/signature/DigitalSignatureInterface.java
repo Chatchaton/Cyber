@@ -19,7 +19,7 @@ public interface DigitalSignatureInterface {
     @Deprecated
     void initializeSignature() throws NoSuchAlgorithmException, InvalidKeyException;
 
-    void generateKeyPair() throws NoSuchAlgorithmException;
+    void generateKeyPair() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchProviderException;
 
     @Deprecated
     void updateSignature() throws SignatureException;

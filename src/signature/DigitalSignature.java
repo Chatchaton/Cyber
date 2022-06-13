@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.*;
+import java.security.spec.ECGenParameterSpec;
 import java.util.Arrays;
 
 public class DigitalSignature implements DigitalSignatureInterface {
@@ -15,14 +16,14 @@ public class DigitalSignature implements DigitalSignatureInterface {
     private Signature signature;
     private byte[] signatureBytes;
     private byte[] msgBytes;
-    public static final String[] supportedKeyAlgorithms = {"RSA", "DSA"};
+    public static final String[] supportedKeyAlgorithms = {"RSA", "DSA", "EC"};
     private String keyAlgorithm = supportedKeyAlgorithms[0];
     public static final String[] supportedHashAlgorithms = {"SHA256", "SHA512", "SHA3-256", "SHA3-512"};
     private String hashAlgorithm = supportedHashAlgorithms[0];
     private String author;
 
 
-    public DigitalSignature() throws NoSuchAlgorithmException, InvalidKeyException {
+    public DigitalSignature() throws NoSuchAlgorithmException, InvalidKeyException, InvalidAlgorithmParameterException, NoSuchProviderException {
         generateKeyPair();
         var privateKey = getPrivateKey();
         createSignature(privateKey, getSignatureType());
@@ -53,13 +54,15 @@ public class DigitalSignature implements DigitalSignatureInterface {
     }
 
     @Override
-    public void generateKeyPair() throws NoSuchAlgorithmException {
-        //Creating KeyPair generator object
-        //TODO RSA and DSA depending on user input i.e SHA256withXXX
-        setKeyPairGen(KeyPairGenerator.getInstance(keyAlgorithm));
-
-        //Initializing the key pair generator
-        getKeyPairGenerator().initialize(2048);
+    public void generateKeyPair() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchProviderException {
+        if (keyAlgorithm == "EC") {
+            setKeyPairGen(KeyPairGenerator.getInstance("EC", "SunEC"));
+            var spec = new ECGenParameterSpec("secp256r1");
+            getKeyPairGenerator().initialize(spec);
+        } else {
+            setKeyPairGen(KeyPairGenerator.getInstance(keyAlgorithm));
+            getKeyPairGenerator().initialize(2048);
+        }
 
         //Generate the pair of keys
         setKeyPair(getKeyPairGenerator().generateKeyPair());
@@ -241,7 +244,7 @@ public class DigitalSignature implements DigitalSignatureInterface {
     }
 
     public String getSignatureType() {
-        return hashAlgorithm + "with" + keyAlgorithm;
+        return hashAlgorithm + "with" + (keyAlgorithm == "EC" ? "ECDSA" : keyAlgorithm);
     }
 
     @Override
