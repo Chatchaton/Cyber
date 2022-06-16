@@ -12,16 +12,16 @@ class MainView : View("Cyber") {
             this += find<SignView>()
         }
 
-        tab("Authenticate") {
+        tab("Verification") {
             isClosable = false
 
-            this += find<AuthenticateView>()
+            this += find<VerificationView>()
         }
 
         tab("Keys") {
             isClosable = false
 
-            this += find<KeyView>()
+            this += find<GenerateKeysView>()
         }
 
     }

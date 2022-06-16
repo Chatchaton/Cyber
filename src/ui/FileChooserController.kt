@@ -3,10 +3,11 @@ package ui
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
+import kotlin.io.path.Path
 
 class FileChooserController : Controller() {
 
-    var lastDirectory: File? = null
+    var lastDirectory: File? = Path(".").toFile()
 
     fun chooseFile(
         title: String,

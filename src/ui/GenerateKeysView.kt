@@ -2,13 +2,14 @@ package ui
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.scene.control.ButtonType
 import javafx.scene.control.ToggleGroup
 import signature.writePrivateKey
 import signature.writePublicKey
 import tornadofx.*
 import java.io.File
 
-class GenerateKeysFragment : Fragment("Generate keys") {
+class GenerateKeysView : View("Generate keys") {
 
     val publicKeyFileProperty = SimpleObjectProperty<File?>()
     var publicKeyFile by publicKeyFileProperty
@@ -33,10 +34,9 @@ class GenerateKeysFragment : Fragment("Generate keys") {
                         action {
                             fileChooserController.chooseFile("Save public key", mode = FileChooserMode.Save) {
                                 initialFileName = "key.public"
-                            }.firstOrNull()
-                                ?.let {
-                                    publicKeyFile = it
-                                }
+                            }.firstOrNull()?.let {
+                                publicKeyFile = it
+                            }
                         }
                     }
                 }
@@ -46,10 +46,9 @@ class GenerateKeysFragment : Fragment("Generate keys") {
                         action {
                             fileChooserController.chooseFile("Save private key", mode = FileChooserMode.Save) {
                                 initialFileName = "key.private"
-                            }.firstOrNull()
-                                ?.let {
-                                    privateKeyFile = it
-                                }
+                            }.firstOrNull()?.let {
+                                privateKeyFile = it
+                            }
                         }
                     }
                 }
@@ -78,6 +77,21 @@ class GenerateKeysFragment : Fragment("Generate keys") {
     }
 
     private fun generate() {
+        val publicExists = publicKeyFile!!.exists()
+        val privateExists = privateKeyFile!!.exists()
+        if (publicExists || privateExists) {
+            val both = publicExists && privateExists
+            val header = if (both) "Files already exist" else "File already exists"
+            val content =
+                if (both) "Both files already exist. Do you want do override them?"
+                else "${if (publicExists) "Public" else "Private"} key file already exists. Do you want to override it?"
+            confirmation(header, content) {
+                if (it != ButtonType.OK) {
+                    return@generate
+                }
+            }
+        }
+
         try {
             signatureController.keyAlgorithm = keyAlgorithm
             signatureController.generateKeyPair()
@@ -92,7 +106,6 @@ class GenerateKeysFragment : Fragment("Generate keys") {
             error("Failed to save keys", content = ex.message)
             return
         }
-        result = true
-        close()
+        information("Keys generated successfully")
     }
 }

@@ -7,6 +7,7 @@ import signature.readPublicKey
 import tornadofx.*
 import java.io.File
 
+@Deprecated("Not needed", replaceWith = ReplaceWith("GenerateKeysView", "ui.GenerateKeysView"))
 class KeyView : View() {
 
     val signatureController by inject<SignatureController>()
@@ -46,7 +47,7 @@ class KeyView : View() {
                 }
                 button("generate") {
                     action {
-                        find<GenerateKeysFragment>().let {
+                        find<GenerateKeysView>().let {
                             it.openModal(modality = Modality.WINDOW_MODAL, block = true)
                             if (it.result) {
                                 publicKeyFile = it.publicKeyFile
